@@ -31,11 +31,11 @@ export const fetchData = async (country) => {
 // Datos históricos globales para la gráfica de línea
 export const fetchDailyData = async () => {
   try {
-  const { data } = await axios.get(`${BASE_URL}/historical/all?lastdays=all`);
-  const timeline = (data && data.timeline) ? data.timeline : data; // algunos despliegan dentro de timeline
-  const cases = timeline && timeline.cases ? timeline.cases : {};
-  const deaths = timeline && timeline.deaths ? timeline.deaths : {};
-  const recovered = timeline && timeline.recovered ? timeline.recovered : {};
+    const { data } = await axios.get(`${BASE_URL}/historical/all?lastdays=all`);
+    const timeline = (data && data.timeline) ? data.timeline : data; // algunos despliegan dentro de timeline
+    const cases = timeline && timeline.cases ? timeline.cases : {};
+    const deaths = timeline && timeline.deaths ? timeline.deaths : {};
+    const recovered = timeline && timeline.recovered ? timeline.recovered : {};
 
     // Convierte claves 'M/D/YY' a ISO 'YYYY-MM-DD' y arma array ordenado
     const toISO = (mdy) => {
