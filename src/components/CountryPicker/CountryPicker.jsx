@@ -10,7 +10,12 @@ const Countries = ({ handleCountryChange }) => {
 
   useEffect(() => {
     const fetchAPI = async () => {
-      setCountries(await fetchCountries());
+      try {
+        const list = await fetchCountries();
+        setCountries(Array.isArray(list) ? list : []);
+      } catch (e) {
+        setCountries([]);
+      }
     };
 
     fetchAPI();
@@ -20,7 +25,9 @@ const Countries = ({ handleCountryChange }) => {
     <FormControl className={styles.formControl}>
       <NativeSelect defaultValue="" onChange={(e) => handleCountryChange(e.target.value)}>
         <option value="">Global</option>
-        {countries.map((country, i) => <option key={i} value={country}>{country}</option>)}
+        {Array.isArray(countries) && countries.map((country, i) => (
+          <option key={i} value={country}>{country}</option>
+        ))}
       </NativeSelect>
     </FormControl>
   );
