@@ -8,6 +8,8 @@ import styles from './Chart.module.css';
 const Chart = ({ data: { confirmed, recovered, deaths }, country }) => {
   // Mantener tipo consistente (array) para evitar condiciones raras de render
   const [dailyData, setDailyData] = useState([]);
+  // Tipo de gráfica realmente renderizado; permite una transición limpia entre Line/Bar
+  const [renderType, setRenderType] = useState(country ? 'bar' : 'line');
 
   useEffect(() => {
     const fetchMyAPI = async () => {
@@ -23,6 +25,7 @@ const Chart = ({ data: { confirmed, recovered, deaths }, country }) => {
       <Bar
         key={`bar-${country || 'global'}`}
         redraw
+        datasetKeyProvider={(dataset) => `bar-${dataset.label}`}
         data={{
           labels: ['Infected', 'Recovered', 'Deaths'],
           datasets: [
@@ -46,6 +49,7 @@ const Chart = ({ data: { confirmed, recovered, deaths }, country }) => {
       <Line
         key="line-global"
         redraw
+        datasetKeyProvider={(dataset) => `line-${dataset.label}`}
         data={{
           labels: dailyData.map(({ date }) => new Date(date).toLocaleDateString()),
           datasets: [{
@@ -71,9 +75,22 @@ const Chart = ({ data: { confirmed, recovered, deaths }, country }) => {
     ) : null
   );
 
+  // Transición controlada de tipo para evitar que React y Chart.js retiren canvas simultáneamente
+  useEffect(() => {
+    const desired = country ? 'bar' : 'line';
+    if (desired !== renderType) {
+      // Vaciar primero
+      setRenderType(null);
+      const id = setTimeout(() => setRenderType(desired), 0);
+      return () => clearTimeout(id);
+    }
+    return undefined;
+  }, [country, renderType]);
+
   return (
     <div className={styles.container}>
-      {country ? barChart : lineChart}
+      {renderType === 'bar' && barChart}
+      {renderType === 'line' && lineChart}
     </div>
   );
 };
